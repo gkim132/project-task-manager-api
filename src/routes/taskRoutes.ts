@@ -28,7 +28,24 @@ taskRouter.post("/", async (req, res): Promise<any> => {
     } catch (error: unknown) {
         console.error("Error saving task:", error);
         res.status(500).json({
-            error: (error as Error).message,
+            status: "error",
+            message: (error as Error).message,
+        });
+    }
+});
+
+taskRouter.get("/", async (req, res): Promise<void> => {
+    try {
+        const data = await Task.find({}).sort({ createdAt: -1 });
+        res.status(200).json({
+            status: "success",
+            data,
+        });
+    } catch (error: unknown) {
+        console.error("Error fetching all task:", error);
+        res.status(500).json({
+            status: "error",
+            message: (error as Error).message,
         });
     }
 });
