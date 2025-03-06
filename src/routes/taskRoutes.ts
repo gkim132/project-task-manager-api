@@ -50,4 +50,78 @@ taskRouter.get("/", async (req, res): Promise<void> => {
     }
 });
 
+taskRouter.get("/:id", async (req, res): Promise<any> => {
+    try {
+        const data = await Task.findById(req.params.id);
+        if (!data) {
+            return res.status(404).json({
+                status: "error",
+                message: `Task with ID ${req.params.id} not found`,
+            });
+        }
+
+        res.status(200).json({
+            status: "success",
+            data,
+        });
+    } catch (error: unknown) {
+        console.error("Error fetching task:", error);
+        res.status(500).json({
+            status: "error",
+            message: (error as Error).message,
+        });
+    }
+});
+
+taskRouter.delete("/:id", async (req, res): Promise<any> => {
+    try {
+        const data = await Task.findByIdAndDelete(req.params.id);
+        if (!data) {
+            return res.status(404).json({
+                status: "error",
+                message: `Task with ID ${req.params.id} not found`,
+            });
+        }
+
+        res.status(200).json({
+            status: "success",
+            message: `${data.title} with ID ${req.params.id} deleted successfully`,
+        });
+    } catch (error: unknown) {
+        console.error("Error deleting task:", error);
+        res.status(500).json({
+            status: "error",
+            message: (error as Error).message,
+        });
+    }
+});
+
+taskRouter.patch("/:id", async (req, res): Promise<any> => {
+    try {
+        const { title, description, status } = req.body;
+        const data = await Task.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true,
+        });
+        if (!data) {
+            return res.status(404).json({
+                status: "error",
+                message: `Task with ID ${req.params.id} not found`,
+            });
+        }
+
+        res.status(200).json({
+            status: "success",
+            message: "Task updated successfully",
+            data,
+        });
+    } catch (error: unknown) {
+        console.error("Error updating task:", error);
+        res.status(500).json({
+            status: "error",
+            message: (error as Error).message,
+        });
+    }
+});
+
 export default taskRouter;
