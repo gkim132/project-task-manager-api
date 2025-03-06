@@ -19,4 +19,4 @@ router
     .patch(taskController.updateTask)
     .delete(taskController.deleteTask);
 
-export { router };
+export default router;

@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import { router as taskRouter } from "./routes/taskRoutes";
+import taskRouter from "./routes/taskRoutes";
 
 dotenv.config();
 
@@ -22,6 +22,4 @@ app.get("/", (req, res) => {
 
 app.use("/tasks", taskRouter);
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+export default app;
