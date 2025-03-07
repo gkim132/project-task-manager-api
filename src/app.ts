@@ -14,7 +14,7 @@ const DB = process.env.DATABASE as string;
 mongoose
   .connect(DB)
   .then(() => console.log("Database connected!"))
-  .catch((error) => console.error("Database connection failed: ", error));
+  .catch((error) => console.error("Database connection failed:", error));
 
 app.get("/", (req, res) => {
   res.send("Server is running!");
