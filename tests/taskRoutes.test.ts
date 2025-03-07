@@ -72,9 +72,22 @@ describe("Task API Endpoints", () => {
     });
 
     it("should return 404 for a non-existing task", async () => {
-        const invalidId = "60c72b2f9b1e8b001f4f7f1a"; // Fake ObjectId
+        const invalidId = "60c72b2f9b1e8b001f4f7f1a";
         const response = await request(app).get(`/tasks/${invalidId}`);
 
         expect(response.status).toBe(404);
+    });
+
+    it("should return 400 for status validation", async () => {
+        const response = await request(app).post("/tasks").send({
+            title: "Test Task",
+            description: "This is a test task",
+            status: "fake status",
+        });
+
+        expect(response.status).toBe(400);
+        expect(response.body.message).toContain(
+            "status must be one of the following values: pending, in-progress, completed",
+        );
     });
 });

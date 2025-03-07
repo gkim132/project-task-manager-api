@@ -2,7 +2,10 @@ import Task from "../models/task";
 import { Request, Response } from "express";
 import mongoose from "mongoose";
 
-const createTask = async (req: Request, res: Response): Promise<any> => {
+const isValidObjectId = (id: string): boolean =>
+    mongoose.Types.ObjectId.isValid(id);
+
+const createTask = async (req: Request, res: Response, next): Promise<any> => {
     const { title, description, status } = req.body;
     if (!title) {
         return res.status(400).json({ error: "Title is required" });
@@ -20,15 +23,15 @@ const createTask = async (req: Request, res: Response): Promise<any> => {
             data,
         });
     } catch (error: unknown) {
-        console.error("Error saving task:", error);
-        res.status(500).json({
-            status: "error",
-            message: (error as Error).message,
-        });
+        next(error);
     }
 };
 
-const getAllTasks = async (req: Request, res: Response): Promise<void> => {
+const getAllTasks = async (
+    req: Request,
+    res: Response,
+    next,
+): Promise<void> => {
     try {
         const data = await Task.find({}).sort({ createdAt: -1 });
         res.status(200).json({
@@ -36,21 +39,16 @@ const getAllTasks = async (req: Request, res: Response): Promise<void> => {
             data,
         });
     } catch (error: unknown) {
-        console.error("Error fetching all task:", error);
-        res.status(500).json({
-            status: "error",
-            message: (error as Error).message,
-        });
+        next(error);
     }
 };
 
-const getTask = async (req: Request, res: Response): Promise<any> => {
+const getTask = async (req: Request, res: Response, next): Promise<any> => {
     try {
-        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-            return res.status(400).json({
-                status: "error",
-                message: "Invalid task ID format",
-            });
+        if (!isValidObjectId(req.params.id)) {
+            return res
+                .status(400)
+                .json({ status: "error", message: "Invalid Task ID" });
         }
 
         const data = await Task.findById(req.params.id);
@@ -66,21 +64,16 @@ const getTask = async (req: Request, res: Response): Promise<any> => {
             data,
         });
     } catch (error: unknown) {
-        console.error("Error fetching task:", error);
-        res.status(500).json({
-            status: "error",
-            message: (error as Error).message,
-        });
+        next(error);
     }
 };
 
-const deleteTask = async (req: Request, res: Response): Promise<any> => {
+const deleteTask = async (req: Request, res: Response, next): Promise<any> => {
     try {
-        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-            return res.status(400).json({
-                status: "error",
-                message: "Invalid task ID format",
-            });
+        if (!isValidObjectId(req.params.id)) {
+            return res
+                .status(400)
+                .json({ status: "error", message: "Invalid Task ID" });
         }
 
         const data = await Task.findByIdAndDelete(req.params.id);
@@ -96,21 +89,16 @@ const deleteTask = async (req: Request, res: Response): Promise<any> => {
             message: `${data.title} with ID ${req.params.id} deleted successfully`,
         });
     } catch (error: unknown) {
-        console.error("Error deleting task:", error);
-        res.status(500).json({
-            status: "error",
-            message: (error as Error).message,
-        });
+        next(error);
     }
 };
 
-const updateTask = async (req: Request, res: Response): Promise<any> => {
+const updateTask = async (req: Request, res: Response, next): Promise<any> => {
     try {
-        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-            return res.status(400).json({
-                status: "error",
-                message: "Invalid task ID format",
-            });
+        if (!isValidObjectId(req.params.id)) {
+            return res
+                .status(400)
+                .json({ status: "error", message: "Invalid Task ID" });
         }
 
         const data = await Task.findByIdAndUpdate(req.params.id, req.body, {
@@ -130,11 +118,7 @@ const updateTask = async (req: Request, res: Response): Promise<any> => {
             data,
         });
     } catch (error: unknown) {
-        console.error("Error updating task:", error);
-        res.status(500).json({
-            status: "error",
-            message: (error as Error).message,
-        });
+        next(error);
     }
 };
 
