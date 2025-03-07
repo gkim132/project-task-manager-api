@@ -6,19 +6,19 @@ import { taskSchema } from "../validations/taskValidation";
 const router = express.Router();
 
 router.use((req, res, next) => {
-    console.log("Time:", new Date());
-    next();
+  console.log("Time:", new Date());
+  next();
 });
 
 router
-    .route("/")
-    .post(validate(taskSchema), taskController.createTask)
-    .get(taskController.getAllTasks);
+  .route("/")
+  .post(validate(taskSchema), taskController.createTask)
+  .get(taskController.getAllTasks);
 
 router
-    .route("/:id")
-    .get(taskController.getTask)
-    .patch(validate(taskSchema), taskController.updateTask)
-    .delete(taskController.deleteTask);
+  .route("/:id")
+  .get(taskController.getTask)
+  .patch(validate(taskSchema), taskController.updateTask)
+  .delete(taskController.deleteTask);
 
 export default router;
