@@ -33,9 +33,26 @@ const getAllTasks = async (
   next
 ): Promise<void> => {
   try {
-    const data = await Task.find({}).sort({ createdAt: -1 });
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+
+    const totalTasks = await Task.countDocuments();
+
+    const data = await Task.find({})
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
     res.status(200).json({
       status: "success",
+      pagination: {
+        currentPage: page,
+        limit,
+        totalPages: Math.ceil(totalTasks / limit),
+        totalTasks
+      },
+      size: data.length,
       data
     });
   } catch (error: unknown) {

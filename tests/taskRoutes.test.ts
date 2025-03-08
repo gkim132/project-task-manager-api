@@ -90,4 +90,18 @@ describe("Task API Endpoints", () => {
       "status must be one of the following values: pending, in-progress, completed"
     );
   });
+
+  describe("Task API Pagination", () => {
+    it("should return paginated tasks", async () => {
+      const response = await request(app).get("/tasks?page=1&limit=5");
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty("pagination");
+      expect(response.body.pagination.currentPage).toBe(1);
+      expect(response.body.pagination.limit).toBe(5);
+      expect(response.body.pagination.totalTasks).toBeGreaterThan(0);
+      expect(response.body.pagination.totalPages).toBeGreaterThan(0);
+      expect(response.body.size).toBeLessThanOrEqual(5);
+    });
+  });
 });
