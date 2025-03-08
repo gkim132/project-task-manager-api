@@ -1,19 +1,31 @@
 import request from "supertest";
 import mongoose from "mongoose";
 import app from "../src/app";
+import { MongoMemoryServer } from "mongodb-memory-server";
 
 describe("Task API Endpoints", () => {
   let taskId: string;
   let consoleSpy;
+  let mongoServer: MongoMemoryServer;
 
   beforeAll(async () => {
-    await mongoose.connect(process.env.DATABASE as string);
+    mongoServer = await MongoMemoryServer.create();
+    const uri = mongoServer.getUri();
+
+    await mongoose.connect(uri, {
+      dbName: "testDB"
+    });
     consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+  });
+
+  beforeEach(async () => {
+    await (mongoose.connection.db as mongoose.mongo.Db).dropDatabase();
   });
 
   afterAll(async () => {
     await mongoose.connection.close();
-    consoleSpy.mockRestore();
+    await mongoServer.stop();
+    consoleSpy.restoreMocks();
   });
 
   it("should create a new task", async () => {
