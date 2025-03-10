@@ -1,33 +1,7 @@
 import request from "supertest";
-import mongoose from "mongoose";
 import app from "../src/app";
-import { MongoMemoryServer } from "mongodb-memory-server";
 
 describe("Task API Endpoints", () => {
-  let taskId: string;
-  let consoleSpy;
-  let mongoServer: MongoMemoryServer;
-
-  beforeAll(async () => {
-    mongoServer = await MongoMemoryServer.create();
-    const uri = mongoServer.getUri();
-
-    await mongoose.connect(uri, {
-      dbName: "testDB"
-    });
-    consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
-  });
-
-  beforeEach(async () => {
-    await (mongoose.connection.db as mongoose.mongo.Db).dropDatabase();
-  });
-
-  afterAll(async () => {
-    await mongoose.connection.close();
-    await mongoServer.stop();
-    consoleSpy.restoreMocks();
-  });
-
   it("should create a new task", async () => {
     const response = await request(app).post("/tasks").send({
       title: "Test Task",
@@ -41,33 +15,58 @@ describe("Task API Endpoints", () => {
       description: "This is a test task",
       status: "pending"
     });
-
-    taskId = response.body.data._id;
   });
 
   it("should get all tasks", async () => {
+    const dataSize = 10;
+    for (let i = 0; i < dataSize; i++) {
+      await request(app)
+        .post("/tasks")
+        .send({
+          title: `Task ${i}`,
+          description: `This is task ${i}`,
+          status: "pending"
+        });
+    }
     const response = await request(app).get("/tasks");
 
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body.data)).toBe(true);
+    expect(response.body.data.length).toBe(dataSize);
   });
 
   it("should get a task by ID", async () => {
-    const response = await request(app).get(`/tasks/${taskId}`);
+    const createdTask = await request(app).post("/tasks").send({
+      title: "Test Task",
+      description: "Task to test GET by ID",
+      status: "pending"
+    });
+
+    const response = await request(app).get(
+      `/tasks/${createdTask.body.data._id}`
+    );
 
     expect(response.status).toBe(200);
     expect(response.body.data).toMatchObject({
       title: "Test Task",
-      description: "This is a test task",
+      description: "Task to test GET by ID",
       status: "pending"
     });
   });
 
-  it("should update a task", async () => {
-    const response = await request(app).patch(`/tasks/${taskId}`).send({
-      title: "Updated Task",
-      status: "in-progress"
+  it("should patch a task", async () => {
+    const createdTask = await request(app).post("/tasks").send({
+      title: "Test Task",
+      description: "Task to test PATCH by ID",
+      status: "pending"
     });
+
+    const response = await request(app)
+      .patch(`/tasks/${createdTask.body.data._id}`)
+      .send({
+        title: "Updated Task",
+        status: "in-progress"
+      });
 
     expect(response.status).toBe(200);
     expect(response.body.data).toMatchObject({
@@ -77,7 +76,15 @@ describe("Task API Endpoints", () => {
   });
 
   it("should delete a task", async () => {
-    const response = await request(app).delete(`/tasks/${taskId}`);
+    const createdTask = await request(app).post("/tasks").send({
+      title: "Test Task",
+      description: "Task to test DELETE by ID",
+      status: "pending"
+    });
+
+    const response = await request(app).delete(
+      `/tasks/${createdTask.body.data._id}`
+    );
 
     expect(response.status).toBe(200);
     expect(response.body.message).toContain("deleted successfully");
@@ -105,15 +112,31 @@ describe("Task API Endpoints", () => {
 
   describe("Task API Pagination", () => {
     it("should return paginated tasks", async () => {
-      const response = await request(app).get("/tasks?page=1&limit=5");
+      const dataSize = 25;
+      const page = 1;
+      const limit = 10;
+      const totalPages = Math.ceil(dataSize / limit);
+      for (let i = 0; i < dataSize; i++) {
+        await request(app)
+          .post("/tasks")
+          .send({
+            title: `Task ${i}`,
+            description: `This is task ${i}`,
+            status: "pending"
+          });
+      }
+      const response = await request(app).get(
+        `/tasks?page=${page}&limit=${limit}`
+      );
+      console.log(response.body.size);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("pagination");
-      expect(response.body.pagination.currentPage).toBe(1);
-      expect(response.body.pagination.limit).toBe(5);
-      expect(response.body.pagination.totalTasks).toBeGreaterThan(0);
-      expect(response.body.pagination.totalPages).toBeGreaterThan(0);
-      expect(response.body.size).toBeLessThanOrEqual(5);
+      expect(response.body.pagination.currentPage).toBe(page);
+      expect(response.body.pagination.limit).toBe(limit);
+      expect(response.body.pagination.totalTasks).toBe(dataSize);
+      expect(response.body.pagination.totalPages).toBe(totalPages);
+      expect(response.body.size).toBe(limit);
     });
   });
 });
