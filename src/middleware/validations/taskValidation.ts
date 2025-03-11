@@ -1,6 +1,6 @@
 import * as yup from "yup";
 
-export const taskSchema = yup.object({
+export const taskValidation = yup.object({
   title: yup
     .string()
     .required("Title is required")

@@ -1,6 +1,6 @@
 import express from "express";
 import taskRouter from "./routes/taskRoutes";
-import errorHandler from "./middlewares/errorHandler";
+import errorMiddleware from "./middleware/errorMiddleware";
 
 const app = express();
 app.use(express.json());
@@ -11,6 +11,6 @@ app.get("/", (req, res) => {
 
 app.use("/tasks", taskRouter);
 
-app.use(errorHandler);
+app.use(errorMiddleware);
 
 export default app;

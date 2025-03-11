@@ -1,7 +1,7 @@
-import Task, { TaskDocument } from "../models/task";
+import Task, { TaskDocument } from "../models/taskModel";
 import { Request, Response } from "express";
 import mongoose from "mongoose";
-import QueryBuilder from "../middlewares/queryBuilder";
+import QueryBuilder from "../utils/queryBuilder";
 
 const isValidObjectId = (id: string): boolean =>
   mongoose.Types.ObjectId.isValid(id);

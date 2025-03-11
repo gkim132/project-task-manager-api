@@ -2,7 +2,7 @@ import fs from "fs";
 import { faker } from "@faker-js/faker";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import Task from "../src/models/task";
+import Task from "../src/models/taskModel";
 
 dotenv.config();
 

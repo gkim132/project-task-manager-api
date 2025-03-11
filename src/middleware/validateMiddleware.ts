@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { AnyObjectSchema } from "yup";
 
-const validate =
+const validateMiddleware =
   (schema: AnyObjectSchema) => async (req: Request, res: Response, next) => {
     try {
       await schema.validate(req.body, { abortEarly: false });
@@ -11,4 +11,4 @@ const validate =
     }
   };
 
-export default validate;
+export default validateMiddleware;

@@ -1,6 +1,3 @@
-/**
- *  [limit, page, title, sort]
- */
 import { Model, Document, Query, SortOrder } from "mongoose";
 
 type QueryParams = {

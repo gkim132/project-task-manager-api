@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-const errorHandler = (
+const errorMiddleware = (
   err: any,
   req: Request,
   res: Response,
@@ -18,4 +18,4 @@ const errorHandler = (
   });
 };
 
-export default errorHandler;
+export default errorMiddleware;

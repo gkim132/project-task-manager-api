@@ -1,7 +1,7 @@
 import express from "express";
 import * as taskController from "../controllers/taskController";
-import validate from "../middlewares/validate";
-import { taskSchema } from "../validations/taskValidation";
+import validateMiddleware from "../middleware/validateMiddleware";
+import { taskValidation } from "../middleware/validations/taskValidation";
 
 const router = express.Router();
 
@@ -12,13 +12,13 @@ router.use((req, res, next) => {
 
 router
   .route("/")
-  .post(validate(taskSchema), taskController.createTask)
+  .post(validateMiddleware(taskValidation), taskController.createTask)
   .get(taskController.getAllTasks);
 
 router
   .route("/:id")
   .get(taskController.getTask)
-  .patch(validate(taskSchema), taskController.updateTask)
+  .patch(validateMiddleware(taskValidation), taskController.updateTask)
   .delete(taskController.deleteTask);
 
 export default router;
