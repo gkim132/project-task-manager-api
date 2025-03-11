@@ -1,10 +1,7 @@
 import Task, { TaskDocument } from "../models/taskModel";
 import { Request, Response } from "express";
-import mongoose from "mongoose";
 import QueryBuilder from "../utils/queryBuilder";
-
-const isValidObjectId = (id: string): boolean =>
-  mongoose.Types.ObjectId.isValid(id);
+import { isValidObjectId } from "../utils/validate";
 
 const createTask = async (req: Request, res: Response, next): Promise<any> => {
   const { title, description, status } = req.body;

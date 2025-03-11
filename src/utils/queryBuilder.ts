@@ -1,10 +1,11 @@
-import { Model, Document, Query, SortOrder } from "mongoose";
+import { Model, Document, Query } from "mongoose";
 
 type QueryParams = {
   page?: string;
   limit?: string;
   sort?: string;
   title?: string;
+  status?: string;
 };
 
 export default class QueryBuilder<T extends Document> {
@@ -21,6 +22,14 @@ export default class QueryBuilder<T extends Document> {
   paginate(): this {
     const page = parseInt(this.queryParams.page ?? "1");
     const limit = parseInt(this.queryParams.limit ?? "10");
+
+    if (isNaN(page) || page < 1) {
+      throw new Error("Page must be a positive number");
+    }
+    if (isNaN(limit) || limit < 1) {
+      throw new Error("Limit must be a positive number");
+    }
+
     const skip = (page - 1) * limit;
 
     this.query = this.query.skip(skip).limit(limit);
@@ -32,18 +41,31 @@ export default class QueryBuilder<T extends Document> {
       const regex = new RegExp(this.queryParams.title, "i");
       this.query = this.query.where("title").regex(regex);
     }
+    if (this.queryParams.status) {
+      const status = this.queryParams.status.split(",");
+      this.query = this.query.where("status").in(status);
+    }
+
     return this;
   }
 
   sort(): this {
+    const allowedSortFields = ["title", "status", "createdAt"];
+
     if (this.queryParams.sort) {
-      const sortField = this.queryParams.sort.startsWith("-")
+      let sortField = this.queryParams.sort.startsWith("-")
         ? this.queryParams.sort.substring(1)
         : this.queryParams.sort;
-      const sortOption: Record<string, SortOrder> = {
-        [sortField]: this.queryParams.sort.startsWith("-") ? -1 : 1
-      };
-      this.query = this.query.sort(sortOption);
+
+      if (!allowedSortFields.includes(sortField)) {
+        this.query = this.query.sort("-createdAt");
+        return this;
+      }
+
+      const sortOrder = this.queryParams.sort.startsWith("-") ? -1 : 1;
+      this.query = this.query.sort({ [sortField]: sortOrder });
+    } else {
+      this.query = this.query.sort("-createdAt");
     }
 
     return this;
