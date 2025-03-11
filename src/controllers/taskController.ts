@@ -1,6 +1,7 @@
-import Task from "../models/task";
+import Task, { TaskDocument } from "../models/task";
 import { Request, Response } from "express";
 import mongoose from "mongoose";
+import QueryBuilder from "../middlewares/queryBuilder";
 
 const isValidObjectId = (id: string): boolean =>
   mongoose.Types.ObjectId.isValid(id);
@@ -33,25 +34,18 @@ const getAllTasks = async (
   next
 ): Promise<void> => {
   try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
-    const skip = (page - 1) * limit;
+    console.log(req.query);
 
-    const totalTasks = await Task.countDocuments();
-
-    const data = await Task.find({})
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+    const queryBuilder = new QueryBuilder<TaskDocument>(Task, req.query)
+      .paginate()
+      .filter()
+      .sort();
+    const data = await queryBuilder.query;
+    const pagination = await queryBuilder.getPaginationMetadata();
 
     res.status(200).json({
       status: "success",
-      pagination: {
-        currentPage: page,
-        limit,
-        totalPages: Math.ceil(totalTasks / limit),
-        totalTasks
-      },
+      pagination,
       size: data.length,
       data
     });

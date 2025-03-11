@@ -1,4 +1,11 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
+
+export type TaskDocument = Document & {
+  title: string;
+  description: string;
+  status: "pending" | "in-progress" | "completed";
+  createdAt: Date;
+};
 
 const taskSchema = new Schema({
   title: { type: String, required: true },
@@ -11,6 +18,6 @@ const taskSchema = new Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-const Task = mongoose.model("Task", taskSchema);
+const Task = mongoose.model<TaskDocument>("Task", taskSchema);
 
 export default Task;
