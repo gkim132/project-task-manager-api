@@ -5,9 +5,6 @@ import { isValidObjectId } from "../utils/validate";
 
 const createTask = async (req: Request, res: Response, next): Promise<any> => {
   const { title, description, status } = req.body;
-  if (!title) {
-    return res.status(400).json({ error: "Title is required" });
-  }
 
   try {
     const task = new Task({
