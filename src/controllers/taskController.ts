@@ -1,12 +1,12 @@
 import Task, { TaskDocument } from "../models/taskModel";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import QueryBuilder from "../utils/queryBuilder";
-import { isValidObjectId } from "../utils/validate";
+import { catchAsync } from "../utils/catchAsync";
 
-const createTask = async (req: Request, res: Response, next): Promise<any> => {
-  const { title, description, status } = req.body;
+const createTask = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    const { title, description, status } = req.body;
 
-  try {
     const task = new Task({
       title,
       description,
@@ -17,17 +17,11 @@ const createTask = async (req: Request, res: Response, next): Promise<any> => {
       status: "success",
       data
     });
-  } catch (error: unknown) {
-    next(error);
   }
-};
+);
 
-const getAllTasks = async (
-  req: Request,
-  res: Response,
-  next
-): Promise<void> => {
-  try {
+const getAllTasks = catchAsync(
+  async (req: Request, res: Response, next): Promise<void> => {
     console.log(req.query);
 
     const queryBuilder = new QueryBuilder<TaskDocument>(Task, req.query)
@@ -43,19 +37,11 @@ const getAllTasks = async (
       size: data.length,
       data
     });
-  } catch (error: unknown) {
-    next(error);
   }
-};
+);
 
-const getTask = async (req: Request, res: Response, next): Promise<any> => {
-  try {
-    if (!isValidObjectId(req.params.id)) {
-      return res
-        .status(400)
-        .json({ status: "error", message: "Invalid Task ID" });
-    }
-
+const getTask = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     const data = await Task.findById(req.params.id);
     if (!data) {
       return res.status(404).json({
@@ -63,24 +49,16 @@ const getTask = async (req: Request, res: Response, next): Promise<any> => {
         message: `Task with ID ${req.params.id} not found`
       });
     }
-
+    console.log("HERE!!");
     res.status(200).json({
       status: "success",
       data
     });
-  } catch (error: unknown) {
-    next(error);
   }
-};
+);
 
-const deleteTask = async (req: Request, res: Response, next): Promise<any> => {
-  try {
-    if (!isValidObjectId(req.params.id)) {
-      return res
-        .status(400)
-        .json({ status: "error", message: "Invalid Task ID" });
-    }
-
+const deleteTask = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     const data = await Task.findByIdAndDelete(req.params.id);
     if (!data) {
       return res.status(404).json({
@@ -93,19 +71,11 @@ const deleteTask = async (req: Request, res: Response, next): Promise<any> => {
       status: "success",
       message: `${data.title} with ID ${req.params.id} deleted successfully`
     });
-  } catch (error: unknown) {
-    next(error);
   }
-};
+);
 
-const updateTask = async (req: Request, res: Response, next): Promise<any> => {
-  try {
-    if (!isValidObjectId(req.params.id)) {
-      return res
-        .status(400)
-        .json({ status: "error", message: "Invalid Task ID" });
-    }
-
+const updateTask = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     const data = await Task.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true
@@ -122,9 +92,7 @@ const updateTask = async (req: Request, res: Response, next): Promise<any> => {
       message: "Task updated successfully",
       data
     });
-  } catch (error: unknown) {
-    next(error);
   }
-};
+);
 
 export { createTask, getTask, getAllTasks, updateTask, deleteTask };

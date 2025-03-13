@@ -2,6 +2,7 @@ import express from "express";
 import * as taskController from "../controllers/taskController";
 import validateMiddleware from "../middleware/validateMiddleware";
 import { taskValidation } from "../middleware/validations/taskValidation";
+import { objectIdMiddleware } from "../middleware/objectIdMiddleware";
 
 const router = express.Router();
 
@@ -17,6 +18,7 @@ router
 
 router
   .route("/:id")
+  .all(objectIdMiddleware)
   .get(taskController.getTask)
   .patch(validateMiddleware(taskValidation), taskController.updateTask)
   .delete(taskController.deleteTask);
