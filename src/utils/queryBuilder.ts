@@ -53,17 +53,15 @@ export default class QueryBuilder<T extends Document> {
     const allowedSortFields = ["title", "status", "createdAt"];
 
     if (this.queryParams.sort) {
-      let sortField = this.queryParams.sort.startsWith("-")
-        ? this.queryParams.sort.substring(1)
-        : this.queryParams.sort;
+      const isDescending = this.queryParams.sort.startsWith("-");
+      const sortField = this.queryParams.sort.replace("-", "");
 
       if (!allowedSortFields.includes(sortField)) {
         this.query = this.query.sort("-createdAt");
         return this;
       }
 
-      const sortOrder = this.queryParams.sort.startsWith("-") ? -1 : 1;
-      this.query = this.query.sort({ [sortField]: sortOrder });
+      this.query = this.query.sort({ [sortField]: isDescending ? -1 : 1 });
     } else {
       this.query = this.query.sort("-createdAt");
     }
