@@ -22,6 +22,14 @@ const errorMiddleware: ErrorRequestHandler = (
     return;
   }
 
+  if (err.statusCode === 401) {
+    res.status(401).json({
+      status: "error",
+      message: err.message
+    });
+    return;
+  }
+
   console.error("Error!!!:", err);
 
   res.status(500).json({

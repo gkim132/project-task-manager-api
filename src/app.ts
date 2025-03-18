@@ -1,5 +1,6 @@
 import express from "express";
 import taskRouter from "./routes/taskRoutes";
+import userRouter from "./routes/userRoutes";
 import errorMiddleware from "./middleware/errorMiddleware";
 
 const app = express();
@@ -10,6 +11,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/tasks", taskRouter);
+app.use("/user", userRouter);
 
 app.use(errorMiddleware);
 

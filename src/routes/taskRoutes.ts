@@ -6,7 +6,7 @@ import {
   updateTask,
   deleteTask
 } from "../controllers/taskController";
-import { validateTask } from "../middleware/validationMiddleware";
+import { taskValidation } from "../middleware/validationMiddleware";
 import { objectIdMiddleware } from "../middleware/objectIdMiddleware";
 
 const router = express.Router();
@@ -16,12 +16,12 @@ router.use((req, res, next) => {
   next();
 });
 
-router.route("/").post(validateTask, createTask).get(getAllTasks);
+router.route("/").post(taskValidation, createTask).get(getAllTasks);
 router
   .route("/:id")
   .all(objectIdMiddleware)
   .get(getTask)
-  .patch(validateTask, updateTask)
+  .patch(taskValidation, updateTask)
   .delete(deleteTask);
 
 export default router;

@@ -7,7 +7,7 @@ export type TaskDocument = Document & {
   createdAt: Date;
 };
 
-const taskSchema = new Schema({
+const taskSchema = new Schema<TaskDocument>({
   title: { type: String, required: true },
   description: String,
   status: {
