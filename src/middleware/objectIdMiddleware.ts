@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
+import BaseError from "../utils/baseError";
 
 export const objectIdMiddleware = (
   req: Request,
@@ -7,11 +8,7 @@ export const objectIdMiddleware = (
   next: NextFunction
 ): void => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    res.status(400).json({
-      status: "error",
-      message: "Invalid Task ID"
-    });
-    return;
+    return next(new BaseError("Invalid Task ID", 400));
   }
   next();
 };

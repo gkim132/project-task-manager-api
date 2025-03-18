@@ -1,4 +1,6 @@
+import { NextFunction } from "express";
 import { Model, Document, Query } from "mongoose";
+import BaseError from "./baseError";
 
 type QueryParams = {
   page?: string;
@@ -19,17 +21,15 @@ export default class QueryBuilder<T extends Document> {
     this.model = model;
   }
 
-  paginate(): this {
+  paginate(): this | any {
     const page = parseInt(this.queryParams.page ?? "1");
     const limit = parseInt(this.queryParams.limit ?? "10");
-
     if (isNaN(page) || page < 1) {
-      throw new Error("Page must be a positive number");
+      throw new BaseError("Page must be a positive number", 400);
     }
     if (isNaN(limit) || limit < 1) {
-      throw new Error("Limit must be a positive number");
+      throw new BaseError("Limit must be a positive number", 400);
     }
-
     const skip = (page - 1) * limit;
 
     this.query = this.query.skip(skip).limit(limit);

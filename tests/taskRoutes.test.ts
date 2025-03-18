@@ -128,7 +128,6 @@ describe("Task API Endpoints", () => {
       const response = await request(app).get(
         `/tasks?page=${page}&limit=${limit}`
       );
-      console.log(response.body.size);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("pagination");

@@ -2,6 +2,7 @@ import Task, { TaskDocument } from "../models/taskModel";
 import { Request, Response, NextFunction } from "express";
 import QueryBuilder from "../utils/queryBuilder";
 import { catchAsync } from "../utils/catchAsync";
+import BaseError from "../utils/baseError";
 
 const createTask = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<any> => {
@@ -22,8 +23,6 @@ const createTask = catchAsync(
 
 const getAllTasks = catchAsync(
   async (req: Request, res: Response, next): Promise<void> => {
-    console.log(req.query);
-
     const queryBuilder = new QueryBuilder<TaskDocument>(Task, req.query)
       .paginate()
       .filter()
@@ -44,12 +43,8 @@ const getTask = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     const data = await Task.findById(req.params.id);
     if (!data) {
-      return res.status(404).json({
-        status: "error",
-        message: `Task with ID ${req.params.id} not found`
-      });
+      throw new BaseError(`Task with ID ${req.params.id} not found`, 404);
     }
-    console.log("HERE!!");
     res.status(200).json({
       status: "success",
       data
@@ -61,10 +56,7 @@ const deleteTask = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     const data = await Task.findByIdAndDelete(req.params.id);
     if (!data) {
-      return res.status(404).json({
-        status: "error",
-        message: `Task with ID ${req.params.id} not found`
-      });
+      throw new BaseError(`Task with ID ${req.params.id} not found`, 404);
     }
 
     res.status(200).json({
@@ -81,10 +73,7 @@ const updateTask = catchAsync(
       runValidators: true
     });
     if (!data) {
-      return res.status(404).json({
-        status: "error",
-        message: `Task with ID ${req.params.id} not found`
-      });
+      throw new BaseError(`Task with ID ${req.params.id} not found`, 404);
     }
 
     res.status(200).json({
