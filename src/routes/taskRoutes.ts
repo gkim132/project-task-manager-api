@@ -13,17 +13,12 @@ import { authenticateUser, authroizeRole } from "../middleware/authMiddleware";
 
 const router = express.Router();
 
-router.use((req, res, next) => {
-  console.log("Time:", new Date());
-  console.log(req.headers);
-  next();
-});
-
 router
   .route("/")
   .post(authenticateUser, taskValidation, createTask)
   .get(authenticateUser, getAllTasks)
   .delete(authenticateUser, authroizeRole("admin"), deleteAllTasks);
+
 router
   .route("/:id")
   .all(objectIdMiddleware)

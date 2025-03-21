@@ -111,13 +111,13 @@ const updateTask = catchAsync(
     }
     if (task.createdBy.toString() !== req.user._id.toString()) {
       throw new BaseError(
-        "This task is not belong to you. You can not update it",
+        "This task does not belong to you. You cannot update it.",
         403
       );
     }
 
-    const updatedTask = { ...task, ...req.body };
-    await updatedTask.save();
+    task.set(req.body);
+    const updatedTask = await task.save();
 
     res.status(200).json({
       status: "success",

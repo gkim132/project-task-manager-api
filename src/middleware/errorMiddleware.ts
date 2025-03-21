@@ -1,45 +1,39 @@
-import e, {
-  Request,
-  Response,
-  NextFunction,
-  ErrorRequestHandler
-} from "express";
+import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
 
 const errorMiddleware: ErrorRequestHandler = (
   err: any,
   req: Request,
   res: Response,
   next: NextFunction
-) => {
-  console.error("Error!!!:", err);
+): void => {
+  console.error("Error occurred:", err);
 
-  if (err.name === "ValidationError") {
-    res.status(400).json({
-      status: "error",
-      message: err.errors.join(", ")
-    });
-    return;
+  switch (err.name) {
+    case "ValidationError":
+      res.status(400).json({
+        status: "error",
+        message: Array.isArray(err.errors) ? err.errors.join(", ") : err.message
+      });
+      break;
+    case "JsonWebTokenError":
+      res.status(401).json({
+        status: "error",
+        message: "Invalid token. Please log in again"
+      });
+      break;
+    case "TokenExpiredError":
+      res.status(401).json({
+        status: "error",
+        message: "Token expired. Please log in again"
+      });
+      break;
+    default:
+      res.status(err.statusCode || 500).json({
+        status: "error",
+        message: err.message || "Something went wrong"
+      });
+      break;
   }
-
-  if (err.name === "JsonWebTokenError") {
-    res.status(401).json({
-      status: "error",
-      message: "Invalid token. Please log in again"
-    });
-    return;
-  }
-
-  if (err.name === "TokenExpiredError") {
-    res.status(401).json({
-      status: "error",
-      message: "Token expired. Please log in again"
-    });
-  }
-
-  res.status(err.statusCode || 500).json({
-    status: "error",
-    message: err.message || "Something went wrong"
-  });
   return;
 };
 

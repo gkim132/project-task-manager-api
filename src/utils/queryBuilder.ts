@@ -2,6 +2,8 @@ import { Model, Document, Query } from "mongoose";
 import BaseError from "./baseError";
 import { IUserRequest } from "../middleware/authMiddleware";
 
+const ALLOWED_SORT_FIELDS = ["title", "status", "createdAt"];
+
 type QueryParams = {
   page?: string;
   limit?: string;
@@ -53,13 +55,11 @@ export default class QueryBuilder<T extends Document> {
   }
 
   sort(): this {
-    const allowedSortFields = ["title", "status", "createdAt"];
-
     if (this.queryParams.sort) {
       const isDescending = this.queryParams.sort.startsWith("-");
       const sortField = this.queryParams.sort.replace("-", "");
 
-      if (!allowedSortFields.includes(sortField)) {
+      if (!ALLOWED_SORT_FIELDS.includes(sortField)) {
         this.query = this.query.sort("-createdAt");
         return this;
       }

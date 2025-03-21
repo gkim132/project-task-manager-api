@@ -1,11 +1,14 @@
 import express from "express";
+import morgan from "morgan";
 import taskRouter from "./routes/taskRoutes";
 import userRouter from "./routes/userRoutes";
 import errorMiddleware from "./middleware/errorMiddleware";
 import BaseError from "./utils/baseError";
 
 const app = express();
+
 app.use(express.json());
+app.use(morgan("dev"));
 
 app.get("/", (req, res) => {
   res.send("Server is running!");

@@ -64,7 +64,6 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
 const updatePassword = catchAsync(
   async (req: IUserRequest, res: Response, next: NextFunction) => {
     const user = await User.findById(req.user.id).select("+password");
-    console.log({ user });
     if (!user) {
       throw new BaseError("User not found", 404);
     }

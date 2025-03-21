@@ -10,10 +10,9 @@ import {
 import { authenticateUser } from "../middleware/authMiddleware";
 
 const userRouter = express.Router();
-console.log("userRouter");
+
 userRouter.post("/signup", userValidation, signup);
 userRouter.get("/allUsers", getAllUsers);
-
 userRouter.post("/login", login);
 userRouter.patch("/updatePassword", authenticateUser, updatePassword);
 userRouter.get("/me", authenticateUser, myProfile);

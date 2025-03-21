@@ -18,7 +18,6 @@ const authenticateUser = catchAsync(
     next: NextFunction
   ): Promise<any> => {
     const authHeader = req.headers.authorization;
-    console.log(authHeader);
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       throw new BaseError("Unauthorized: Please log in to get access", 401);
     }
@@ -35,7 +34,6 @@ const authenticateUser = catchAsync(
       throw new BaseError("Unauthorized: User no longer exists", 401);
     }
 
-    console.log("user", user);
     req.user = user;
     next();
   }
