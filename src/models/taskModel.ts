@@ -1,9 +1,10 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, ObjectId, Schema } from "mongoose";
 
 export type TaskDocument = Document & {
   title: string;
   description: string;
   status: "pending" | "in-progress" | "completed";
+  createdBy: ObjectId;
   createdAt: Date;
 };
 
@@ -15,6 +16,7 @@ const taskSchema = new Schema<TaskDocument>({
     enum: ["pending", "in-progress", "completed"],
     default: "pending"
   },
+  createdBy: { type: Schema.Types.ObjectId, ref: "User" },
   createdAt: { type: Date, default: Date.now }
 });
 

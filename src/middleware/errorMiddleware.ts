@@ -1,4 +1,9 @@
-import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
+import e, {
+  Request,
+  Response,
+  NextFunction,
+  ErrorRequestHandler
+} from "express";
 
 const errorMiddleware: ErrorRequestHandler = (
   err: any,
@@ -6,6 +11,8 @@ const errorMiddleware: ErrorRequestHandler = (
   res: Response,
   next: NextFunction
 ) => {
+  console.error("Error!!!:", err);
+
   if (err.name === "ValidationError") {
     res.status(400).json({
       status: "error",
@@ -14,27 +21,24 @@ const errorMiddleware: ErrorRequestHandler = (
     return;
   }
 
-  if (err.statusCode === 404) {
-    res.status(403).json({
-      status: "error",
-      message: err.message
-    });
-    return;
-  }
-
-  if (err.statusCode === 401) {
+  if (err.name === "JsonWebTokenError") {
     res.status(401).json({
       status: "error",
-      message: err.message
+      message: "Invalid token. Please log in again"
     });
     return;
   }
 
-  console.error("Error!!!:", err);
+  if (err.name === "TokenExpiredError") {
+    res.status(401).json({
+      status: "error",
+      message: "Token expired. Please log in again"
+    });
+  }
 
-  res.status(500).json({
+  res.status(err.statusCode || 500).json({
     status: "error",
-    message: "Something went wrong"
+    message: err.message || "Something went wrong"
   });
   return;
 };

@@ -1,6 +1,6 @@
-import { NextFunction } from "express";
 import { Model, Document, Query } from "mongoose";
 import BaseError from "./baseError";
+import { IUserRequest } from "../middleware/authMiddleware";
 
 type QueryParams = {
   page?: string;
@@ -15,9 +15,12 @@ export default class QueryBuilder<T extends Document> {
   queryParams: QueryParams;
   model: Model<T>;
 
-  constructor(model: Model<T>, queryParams: QueryParams) {
-    this.query = model.find();
-    this.queryParams = queryParams;
+  constructor(model: Model<T>, req: IUserRequest) {
+    this.query =
+      req.user.role === "admin"
+        ? model.find()
+        : model.find({ createdBy: req.user._id });
+    this.queryParams = req.query;
     this.model = model;
   }
 

@@ -3,15 +3,21 @@ import { Request, Response, NextFunction } from "express";
 import QueryBuilder from "../utils/queryBuilder";
 import { catchAsync } from "../utils/catchAsync";
 import BaseError from "../utils/baseError";
+import { IUserRequest } from "../middleware/authMiddleware";
 
 const createTask = catchAsync(
-  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  async (
+    req: IUserRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
     const { title, description, status } = req.body;
 
     const task = new Task({
       title,
       description,
-      status
+      status,
+      createdBy: req.user._id
     });
     const data = await task.save();
     res.status(201).json({
@@ -22,8 +28,8 @@ const createTask = catchAsync(
 );
 
 const getAllTasks = catchAsync(
-  async (req: Request, res: Response, next): Promise<void> => {
-    const queryBuilder = new QueryBuilder<TaskDocument>(Task, req.query)
+  async (req: IUserRequest, res: Response, next): Promise<void> => {
+    const queryBuilder = new QueryBuilder<TaskDocument>(Task, req)
       .paginate()
       .filter()
       .sort();
@@ -53,35 +59,79 @@ const getTask = catchAsync(
 );
 
 const deleteTask = catchAsync(
-  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
-    const data = await Task.findByIdAndDelete(req.params.id);
-    if (!data) {
+  async (
+    req: IUserRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    const task = await Task.findById(req.params.id);
+    if (!task) {
       throw new BaseError(`Task with ID ${req.params.id} not found`, 404);
     }
+    if (task.createdBy.toString() !== req.user._id.toString()) {
+      throw new BaseError(
+        "This task is not belong to you. You can not update it",
+        403
+      );
+    }
+
+    await Task.deleteOne({ _id: req.params.id });
 
     res.status(200).json({
       status: "success",
-      message: `${data.title} with ID ${req.params.id} deleted successfully`
+      message: `${task.title} with ID ${req.params.id} deleted successfully`
+    });
+  }
+);
+
+const deleteAllTasks = catchAsync(
+  async (
+    req: IUserRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    const task = await Task.deleteMany();
+
+    res.status(200).json({
+      status: "success",
+      message: `All tasks(${task.deletedCount}) are deleted successfully`
     });
   }
 );
 
 const updateTask = catchAsync(
-  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
-    const data = await Task.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true
-    });
-    if (!data) {
+  async (
+    req: IUserRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    const task = await Task.findById(req.params.id);
+    if (!task) {
       throw new BaseError(`Task with ID ${req.params.id} not found`, 404);
     }
+    if (task.createdBy.toString() !== req.user._id.toString()) {
+      throw new BaseError(
+        "This task is not belong to you. You can not update it",
+        403
+      );
+    }
+
+    const updatedTask = { ...task, ...req.body };
+    await updatedTask.save();
 
     res.status(200).json({
       status: "success",
       message: "Task updated successfully",
-      data
+      data: updatedTask
     });
   }
 );
 
-export { createTask, getTask, getAllTasks, updateTask, deleteTask };
+export {
+  createTask,
+  getTask,
+  getAllTasks,
+  updateTask,
+  deleteTask,
+  deleteAllTasks
+};

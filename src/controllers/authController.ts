@@ -1,8 +1,9 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../utils/catchAsync";
-import User from "../models/userModel";
+import User, { UserDocument } from "../models/userModel";
 import jwt from "jsonwebtoken";
 import BaseError from "../utils/baseError";
+import { IUserRequest } from "../middleware/authMiddleware";
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -10,43 +11,80 @@ const signToken = (id) => {
   });
 };
 
+const createSendToken = (user: UserDocument, statusCode, res) => {
+  const token = signToken(user._id);
+
+  //   res.cookie("jwt", token, {
+  //     expires: new Date(
+  //       Date.now() +
+  //         parseInt(process.env.JWT_COOKIE_EXPIRES_IN) * 24 * 60 * 60 * 1000
+  //     ),
+  //     httpOnly: true
+  //   });
+
+  user.password = undefined;
+
+  res.status(statusCode).json({ status: "success", token, data: { user } });
+};
+
 const signup = catchAsync(async (req: Request, res: Response) => {
   const { name, email, password, role } = req.body;
   const user = await User.create({ name, email, password, role });
 
-  res.status(201).json({
-    status: "success",
-    user: {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      createdAt: user.createdAt
+  createSendToken(user, 201, res);
+});
+
+const login = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      throw new BaseError("Please provide email and password", 400);
     }
-  });
-});
 
-const login = catchAsync(async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    res.status(400).json({
-      status: "error",
-      message: "Please provide email and password"
-    });
-  }
-  const user = await User.findOne({ email }).select("+password");
-  console.log(user);
-  if (!user || !(await user.comparePassword(password))) {
-    throw new BaseError("Incorrect email or password", 401);
-  }
-  const token = signToken(user._id);
+    const user = await User.findOne({ email }).select("+password");
+    if (!user || !(await user.comparePassword(password))) {
+      throw new BaseError("Incorrect email or password", 401);
+    }
 
-  res.status(200).json({ status: "success", token });
-});
+    createSendToken(user, 200, res);
+  }
+);
+
+const protect = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    next();
+  }
+);
 
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   const users = await User.find();
   res.status(200).json({ status: "success", users });
 });
 
-export { signup, getAllUsers, login };
+const updatePassword = catchAsync(
+  async (req: IUserRequest, res: Response, next: NextFunction) => {
+    const user = await User.findById(req.user.id).select("+password");
+    console.log({ user });
+    if (!user) {
+      throw new BaseError("User not found", 404);
+    }
+
+    if (
+      !req.body.currentPassword ||
+      !(await user.comparePassword(req.body.currentPassword))
+    ) {
+      throw new BaseError("Incorrect password", 401);
+    }
+
+    user.password = req.body.newPassword;
+    await user.save({ validateBeforeSave: false });
+
+    createSendToken(user, 200, res);
+  }
+);
+
+const myProfile = catchAsync(async (req: IUserRequest, res: Response) => {
+  createSendToken(req.user, 200, res);
+});
+
+export { signup, getAllUsers, login, protect, updatePassword, myProfile };

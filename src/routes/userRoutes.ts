@@ -1,11 +1,21 @@
 import express from "express";
 import { userValidation } from "../middleware/validationMiddleware";
-import { getAllUsers, signup, login } from "../controllers/authController";
+import {
+  getAllUsers,
+  signup,
+  login,
+  updatePassword,
+  myProfile
+} from "../controllers/authController";
+import { authenticateUser } from "../middleware/authMiddleware";
 
 const userRouter = express.Router();
+console.log("userRouter");
+userRouter.post("/signup", userValidation, signup);
+userRouter.get("/allUsers", getAllUsers);
 
-userRouter.route("/").post(userValidation, signup).get(getAllUsers);
-
-userRouter.route("/login").post(login);
+userRouter.post("/login", login);
+userRouter.patch("/updatePassword", authenticateUser, updatePassword);
+userRouter.get("/me", authenticateUser, myProfile);
 
 export default userRouter;

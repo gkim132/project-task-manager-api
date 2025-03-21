@@ -1,12 +1,13 @@
 import mongoose, { Document, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 
-type UserDocument = Document & {
+export type UserDocument = Document & {
   name: string;
   email: string;
   password: string;
-  role: "user" | "admin";
+  role: string;
   createdAt: Date;
+  passwordChangedAt: Date;
   comparePassword(userPassword: string): Promise<boolean>;
 };
 
@@ -27,7 +28,8 @@ const userSchema = new Schema<UserDocument>({
     type: String,
     required: true,
     minlength: 7,
-    trim: true
+    trim: true,
+    select: false
   },
   role: {
     type: String,
@@ -37,21 +39,26 @@ const userSchema = new Schema<UserDocument>({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  passwordChangedAt: {
+    type: Date
   }
 });
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
-  const salt = await bcrypt.hash(this.password, 10);
-  this.password = salt;
+  const salt = await bcrypt.genSalt(10);
+  console.log(salt);
+  this.password = await bcrypt.hash(this.password, salt);
+
   next();
 });
 
 userSchema.methods.comparePassword = async function (
-  userPassword: string
+  candidatePassword: string
 ): Promise<boolean> {
-  return bcrypt.compare(userPassword, this.password);
+  return bcrypt.compare(candidatePassword, this.password);
 };
 
 const User = mongoose.model<UserDocument>("User", userSchema);
