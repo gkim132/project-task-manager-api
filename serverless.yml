@@ -32,11 +32,19 @@ provider:
           Resource: arn:aws:s3:::${env:AWS_BUCKET_NAME}/*
 
 functions:
-  app:
-    handler: src/lambda.handler
-    timeout: 20
+  user:
+    handler: src/lambda.userHandler
     events:
-      - httpApi: "*"
+      - httpApi:
+          path: /user/{proxy+}
+          method: ANY
+
+  task:
+    handler: src/lambda.taskHandler
+    events:
+      - httpApi:
+          path: /tasks/{proxy+}
+          method: ANY
 
 custom:
   esbuild:

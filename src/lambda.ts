@@ -14,7 +14,12 @@ const connectToDatabase = async () => {
   }
 };
 
-export const handler = async (event: any, context: any) => {
+export const taskHandler = async (event: any, context: any) => {
+  await connectToDatabase();
+  const handler = serverless(app);
+  return handler(event, context);
+};
+export const userHandler = async (event: any, context: any) => {
   await connectToDatabase();
   const handler = serverless(app);
   return handler(event, context);
