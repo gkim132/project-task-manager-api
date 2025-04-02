@@ -1,0 +1,63 @@
+service: task-manager-api
+
+frameworkVersion: "3"
+
+useDotenv: true
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-esbuild
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  stage: dev
+
+  environment:
+    MONGO_URI: ${env:DATABASE}
+    JWT_SECRET: ${env:JWT_SECRET}
+    JWT_EXPIRES_IN: ${env:JWT_EXPIRES_IN}
+    AWS_BUCKET_NAME: ${env:AWS_BUCKET_NAME}
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+            - s3:DeleteObject
+          Resource: arn:aws:s3:::${env:AWS_BUCKET_NAME}/*
+
+functions:
+  app:
+    handler: src/lambda.handler
+    timeout: 20
+    events:
+      - httpApi: "*"
+
+custom:
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: true
+    exclude: ["aws-sdk"]
+    target: node18
+    platform: node
+    concurrency: 10
+
+  serverless-offline:
+    httpPort: 3004
+
+  dotenv:
+    path: .env
+
+package:
+  individually: true
+  patterns:
+    - "!node_modules/**"
+    - "!tests/**"
+    - "!coverage/**"
+    - "!dev-data/**"

@@ -8,7 +8,9 @@
     "start": "node dist/server.js",
     "test": "jest",
     "import-data": "ts-node dev-data/dev-data-handler.ts --import",
-    "delete-data": "ts-node dev-data/dev-data-handler.ts --delete"
+    "delete-data": "ts-node dev-data/dev-data-handler.ts --delete",
+    "sls": "serverless",
+    "sls:offline": "serverless offline"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +22,7 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.12.1",
+    "serverless-http": "^3.2.0",
     "yup": "^1.6.1"
   },
   "devDependencies": {
@@ -38,6 +41,10 @@
     "morgan": "^1.10.0",
     "nodemon": "^3.1.9",
     "prettier": "^3.5.3",
+    "serverless": "^3.40.0",
+    "serverless-dotenv-plugin": "^6.0.0",
+    "serverless-esbuild": "^1.55.0",
+    "serverless-offline": "^13.9.0",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
