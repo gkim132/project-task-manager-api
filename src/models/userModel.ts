@@ -9,6 +9,7 @@ export type UserDocument = Document & {
   createdAt: Date;
   passwordChangedAt: Date;
   comparePassword(userPassword: string): Promise<boolean>;
+  tasks?: Array<any>;
 };
 
 const userSchema = new Schema<UserDocument>({

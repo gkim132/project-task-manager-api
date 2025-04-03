@@ -4,6 +4,7 @@ import User, { UserDocument } from "../models/userModel";
 import jwt from "jsonwebtoken";
 import BaseError from "../utils/baseError";
 import { IUserRequest } from "../middleware/authMiddleware";
+import Task from "../models/taskModel";
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -83,7 +84,20 @@ const updatePassword = catchAsync(
 );
 
 const myProfile = catchAsync(async (req: IUserRequest, res: Response) => {
-  createSendToken(req.user, 200, res);
+  const user = await User.findById(req.user.id);
+  if (!user) {
+    throw new BaseError("User not found", 404);
+  }
+
+  const tasks = await Task.find({ createdBy: req.user.id });
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      user,
+      tasks
+    }
+  });
 });
 
 export { signup, getAllUsers, login, protect, updatePassword, myProfile };
