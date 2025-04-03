@@ -43,6 +43,9 @@ functions:
     handler: src/lambda.taskHandler
     events:
       - httpApi:
+          path: /tasks
+          method: ANY
+      - httpApi:
           path: /tasks/{proxy+}
           method: ANY
 
@@ -61,6 +64,11 @@ custom:
 
   dotenv:
     path: .env
+    include:
+      - JWT_SECRET
+      - JWT_EXPIRES_IN
+      - DATABASE
+      - AWS_BUCKET_NAME
 
 package:
   individually: true
