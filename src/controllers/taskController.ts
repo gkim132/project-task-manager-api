@@ -4,6 +4,7 @@ import QueryBuilder from "../utils/queryBuilder";
 import { catchAsync } from "../utils/catchAsync";
 import BaseError from "../utils/baseError";
 import { IUserRequest } from "../middleware/authMiddleware";
+import { uploadToS3 } from "../utils/uploadToS3";
 
 const createTask = catchAsync(
   async (
@@ -11,13 +12,14 @@ const createTask = catchAsync(
     res: Response,
     next: NextFunction
   ): Promise<any> => {
-    const { title, description, status } = req.body;
+    const { title, description, status, imageUrl } = req.body;
 
     const task = new Task({
       title,
       description,
       status,
-      createdBy: req.user._id
+      createdBy: req.user._id,
+      imageUrl
     });
     const data = await task.save();
     res.status(201).json({

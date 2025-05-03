@@ -4,6 +4,7 @@ export type TaskDocument = Document & {
   title: string;
   description: string;
   status: "pending" | "in-progress" | "completed";
+  imageUrl?: string;
   createdBy: ObjectId;
   createdAt: Date;
 };
@@ -16,6 +17,7 @@ const taskSchema = new Schema<TaskDocument>({
     enum: ["pending", "in-progress", "completed"],
     default: "pending"
   },
+  imageUrl: String,
   createdBy: { type: Schema.Types.ObjectId, ref: "User" },
   createdAt: { type: Date, default: Date.now }
 });

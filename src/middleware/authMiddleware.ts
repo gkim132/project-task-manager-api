@@ -4,9 +4,11 @@ import User, { UserDocument } from "../models/userModel";
 import { catchAsync } from "../utils/catchAsync";
 import BaseError from "../utils/baseError";
 import { promisify } from "util";
+import { Multer } from "multer";
 
 export interface IUserRequest extends Request {
   user: UserDocument;
+  file?: Multer.File;
 }
 
 const verifyToken = promisify(jwt.verify);

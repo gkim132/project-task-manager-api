@@ -6,7 +6,11 @@ import User from "../models/userModel";
 const taskValidationSchema = yup.object().shape({
   title: yup.string().required("Title is required"),
   description: yup.string().optional(),
-  status: yup.string().oneOf(["pending", "in-progress", "completed"]).optional()
+  status: yup
+    .string()
+    .oneOf(["pending", "in-progress", "completed"])
+    .optional(),
+  imageUrl: yup.string().url().optional()
 });
 
 const userValidationSchema = yup.object().shape({

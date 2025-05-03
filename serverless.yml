@@ -54,7 +54,6 @@ custom:
     bundle: true
     minify: false
     sourcemap: true
-    exclude: ["aws-sdk"]
     target: node18
     platform: node
     concurrency: 10

@@ -2,6 +2,7 @@ import express from "express";
 import morgan from "morgan";
 import taskRouter from "./routes/taskRoutes";
 import userRouter from "./routes/userRoutes";
+import uploadRouter from "./routes/uploadRoutes";
 import errorMiddleware from "./middleware/errorMiddleware";
 import BaseError from "./utils/baseError";
 
@@ -16,6 +17,7 @@ app.get("/", (req, res) => {
 
 app.use(`/tasks`, taskRouter);
 app.use(`/user`, userRouter);
+app.use("/files", uploadRouter);
 
 app.all("*", (req, res, next) => {
   next(new BaseError(`Can't find ${req.originalUrl} on this server!`, 404));
