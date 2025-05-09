@@ -343,14 +343,7 @@
 							]
 						},
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZGMxNjk5NmFkYjRlYmYxZTM2NDVmMSIsImlhdCI6MTc0MjQ3Njk2MiwiZXhwIjoxNzQzMDgxNzYyfQ.Q_mg-Eikm2buSn8mJKaI9X69VTgfHWfQ0dl5kKPYvPE",
-								"type": "text",
-								"disabled": true
-							}
-						],
+						"header": [],
 						"url": {
 							"raw": "{{URL}}/tasks/allTasks?page=1&limit=10",
 							"host": [
@@ -361,14 +354,6 @@
 								"allTasks"
 							],
 							"query": [
-								{
-									"key": "page",
-									"value": "1"
-								},
-								{
-									"key": "limit",
-									"value": "10"
-								},
 								{
 									"key": "title",
 									"value": "book",
@@ -383,6 +368,14 @@
 									"key": "sort",
 									"value": "-createdAt",
 									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
 								}
 							]
 						}
