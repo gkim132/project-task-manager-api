@@ -134,3 +134,9 @@ npx serverless deploy
 - All endpoints are routed via **API Gateway (HTTP API)**
 - Environment is configured via `.env` + `serverless.yml`
 - Images stored in S3 with `public-read` ACL
+
+## Postman Collection
+
+You can import the full Postman collection to test the API:
+
+- Download TaskManagerAPI.postman_collection.json
