@@ -12,20 +12,20 @@ const signToken = (id) => {
   });
 };
 
-const createSendToken = (user: UserDocument, statusCode, res) => {
+const createSendToken = (
+  user: UserDocument,
+  statusCode: number,
+  res: Response
+) => {
   const token = signToken(user._id);
+  const userObject = user.toObject();
+  delete userObject.password;
 
-  //   res.cookie("jwt", token, {
-  //     expires: new Date(
-  //       Date.now() +
-  //         parseInt(process.env.JWT_COOKIE_EXPIRES_IN) * 24 * 60 * 60 * 1000
-  //     ),
-  //     httpOnly: true
-  //   });
-
-  user.password = undefined;
-
-  res.status(statusCode).json({ status: "success", token, data: { user } });
+  res.status(statusCode).json({
+    status: "success",
+    token,
+    data: { user: userObject }
+  });
 };
 
 const signup = catchAsync(async (req: Request, res: Response) => {

@@ -41,7 +41,7 @@ const authenticateUser = catchAsync(
   }
 );
 
-const authroizeRole = (role: string) => {
+const authorizeRole = (role: string) => {
   return (req: IUserRequest, res: Response, next: NextFunction) => {
     if (role !== req.user.role) {
       throw new BaseError(
@@ -53,4 +53,4 @@ const authroizeRole = (role: string) => {
   };
 };
 
-export { authenticateUser, authroizeRole };
+export { authenticateUser, authorizeRole };

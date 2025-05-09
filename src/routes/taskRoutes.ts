@@ -9,7 +9,7 @@ import {
 } from "../controllers/taskController";
 import { taskValidation } from "../middleware/validationMiddleware";
 import { objectIdMiddleware } from "../middleware/objectIdMiddleware";
-import { authenticateUser, authroizeRole } from "../middleware/authMiddleware";
+import { authenticateUser, authorizeRole } from "../middleware/authMiddleware";
 
 const router = express.Router();
 
@@ -17,7 +17,7 @@ router
   .route("/")
   .post(authenticateUser, taskValidation, createTask)
   .get(authenticateUser, getAllTasks)
-  .delete(authenticateUser, authroizeRole("admin"), deleteAllTasks);
+  .delete(authenticateUser, authorizeRole("admin"), deleteAllTasks);
 
 router
   .route("/:id")
