@@ -6,12 +6,12 @@ A RESTful backend API for managing personal tasks, with secure user authenticati
 
 ## Features
 
-- ✅ JWT-based authentication (`/auth/signup`, `/auth/login`)
-- ✅ Role-based access control (`admin`, `user`)
-- ✅ Task ownership and authorization
-- ✅ Image upload using S3 presigned URLs
-- ✅ Serverless deployment (AWS Lambda + API Gateway)
-- ✅ Clean, modular structure with TypeScript & Express
+- JWT-based authentication (`/auth/signup`, `/auth/login`)
+- Role-based access control (`admin`, `user`)
+- Task ownership and authorization
+- Image upload using S3 presigned URLs
+- Serverless deployment (AWS Lambda + API Gateway)
+- Clean, modular structure with TypeScript & Express
 
 ---
 
@@ -123,7 +123,7 @@ npm test
 
 ---
 
-## 🚀 Deployment
+## Deployment
 
 This app is deployed to **AWS Lambda** using the **Serverless Framework**:
 
