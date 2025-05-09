@@ -7,7 +7,7 @@ const s3 = new S3Client({ region: "us-east-1" });
 export const generatePresignedUrl = async (
   fileName: string,
   contentType: string
-): Promise<{ uploadUrl: string; fileUrl: string }> => {
+): Promise<{ uploadUrl: string; imageUrl: string }> => {
   const bucketName = process.env.AWS_BUCKET_NAME;
 
   if (!bucketName) {
@@ -25,7 +25,7 @@ export const generatePresignedUrl = async (
 
   const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 30 });
 
-  const fileUrl = `https://${bucketName}.s3.amazonaws.com/${key}`;
+  const imageUrl = `https://${bucketName}.s3.amazonaws.com/${key}`;
 
-  return { uploadUrl, fileUrl };
+  return { uploadUrl, imageUrl };
 };

@@ -17,7 +17,7 @@ const taskSchema = new Schema<TaskDocument>({
     enum: ["pending", "in-progress", "completed"],
     default: "pending"
   },
-  imageUrl: String,
+  imageUrl: { type: String, default: null },
   createdBy: { type: Schema.Types.ObjectId, ref: "User" },
   createdAt: { type: Date, default: Date.now }
 });

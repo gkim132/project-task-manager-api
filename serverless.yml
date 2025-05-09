@@ -29,6 +29,7 @@ provider:
             - s3:PutObject
             - s3:GetObject
             - s3:DeleteObject
+            - s3:PutObjectAcl
           Resource: arn:aws:s3:::${env:AWS_BUCKET_NAME}/*
 
 functions:
@@ -43,11 +44,14 @@ functions:
     handler: src/lambda.taskHandler
     events:
       - httpApi:
-          path: /tasks
-          method: ANY
-      - httpApi:
           path: /tasks/{proxy+}
           method: ANY
+  presignUpload:
+    handler: src/lambda.fileHandler
+    events:
+      - httpApi:
+          path: /files/{proxy+}
+          method: post
 
 custom:
   esbuild:

@@ -24,3 +24,9 @@ export const userHandler = async (event: any, context: any) => {
   const handler = serverless(app);
   return handler(event, context);
 };
+
+export const fileHandler = async (event: any, context: any) => {
+  await connectToDatabase();
+  const handler = serverless(app);
+  return handler(event, context);
+};

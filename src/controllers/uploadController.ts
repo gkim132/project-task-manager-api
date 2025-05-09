@@ -37,14 +37,14 @@ export const getPresignedUrl = catchAsync(
       throw new BaseError("fileName and contentType are required", 400);
     }
 
-    const { uploadUrl, fileUrl } = await generatePresignedUrl(
+    const { uploadUrl, imageUrl } = await generatePresignedUrl(
       fileName,
       contentType
     );
 
     res.status(200).json({
       uploadUrl,
-      fileUrl
+      imageUrl
     });
   }
 );
