@@ -51,12 +51,6 @@ const login = catchAsync(
   }
 );
 
-const protect = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    next();
-  }
-);
-
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   const users = await User.find();
   res.status(200).json({ status: "success", users });
@@ -100,4 +94,4 @@ const myProfile = catchAsync(async (req: IUserRequest, res: Response) => {
   });
 });
 
-export { signup, getAllUsers, login, protect, updatePassword, myProfile };
+export { signup, getAllUsers, login, updatePassword, myProfile };

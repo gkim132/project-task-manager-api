@@ -72,7 +72,7 @@ const deleteTask = catchAsync(
     }
     if (task.createdBy.toString() !== req.user._id.toString()) {
       throw new BaseError(
-        "This task is not belong to you. You can not update it",
+        "This task does not belong to you. You can not update it",
         403
       );
     }

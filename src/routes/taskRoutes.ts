@@ -16,8 +16,9 @@ const router = express.Router();
 router
   .route("/")
   .post(authenticateUser, taskValidation, createTask)
-  .get(authenticateUser, getAllTasks)
   .delete(authenticateUser, authorizeRole("admin"), deleteAllTasks);
+
+router.route("/allTasks").get(authenticateUser, getAllTasks);
 
 router
   .route("/:id")
