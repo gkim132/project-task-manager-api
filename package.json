@@ -15,7 +15,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "A RESTful backend API for managing personal tasks, with secure user authentication, image upload support via AWS S3, and deployment to AWS Lambda using the Serverless Framework.",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.802.0",
     "@aws-sdk/s3-request-presigner": "^3.802.0",
@@ -52,5 +52,8 @@
     "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"
+  },
+  "directories": {
+    "test": "tests"
   }
 }
